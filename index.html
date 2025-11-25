@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tienda de Camisetas</title>
+    <link rel="icon" href="./assets/barca.png" type="image/png">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+    <script>
+        tailwind.config = { darkMode: 'class', }
+    </script>
+</head>
+<body class="bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
+    <!-- Modal de Login -->
+    <div id="login-modal" class="modal-overlay hidden">
+        <div class="modal-content">
+            <h3 class="modal-title">🔐 Iniciar Sesión (Admin)</h3>
+            <form id="login-form" class="space-y-6">
+                <div>
+                    <label for="username" class="input-label">Usuario</label>
+                    <input type="text" id="username" class="form-input" required>
+                </div>
+                <div class="relative">
+                    <label for="password" class="input-label">Contraseña</label>
+                    <input type="password" id="password" class="form-input pr-10" required>
+                    <button type="button" id="toggle-password" class="password-toggle">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                </div>
+                <button type="submit" class="btn-primary w-full">
+                    Acceder
+                </button>
+                <button type="button" id="close-login-modal" class="btn-secondary w-full">
+                    Cancelar
+                </button>
+                <p class="text-sm text-center text-gray-500 dark:text-gray-400 mt-4">Credenciales: <br> Axel15 <br> Axel15*.</p>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal de Detalles del Producto -->
+    <div id="product-detail-modal" class="modal-overlay hidden">
+        <div class="modal-content max-w-2xl">
+            <button id="close-detail-modal" class="absolute top-4 right-4 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
+                <i class="fas fa-times text-xl"></i>
+            </button>
+            <div id="product-detail-content" class="p-6">
+                <!-- Contenido dinámico se cargará aquí -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="container mx-auto px-4 py-4 flex flex-wrap justify-between items-center">
+            <div class="flex items-center space-x-3">
+                <img src="./assets/barca.png" alt="Tu Logo" class="h-8 w-8 object-contain">
+                <h1 class="text-2xl font-bold text-gray-800 dark:text-white">Camisetas Store</h1>
+            </div>
+            
+            <div class="flex items-center space-x-2 md:space-x-4"> 
+                <button id="login-toggle" class="btn-login">
+                    <i class="fas fa-sign-in-alt md:mr-2" id="login-icon"></i>
+                    <span id="login-text" class="hidden md:inline">Iniciar Sesión</span> 
+                </button>
+                
+                <button class="btn-primary">
+                    <i class="fas fa-shopping-cart md:mr-2"></i>
+                    <span class="hidden md:inline">Carrito</span>
+                </button>
+                
+                <button id="theme-toggle" class="theme-toggle">
+                    <i class="fas fa-moon" id="theme-icon"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Contenido Principal -->
+    <main class="container mx-auto px-4 py-8">
+        <!-- Sección de Agregar Producto (solo para admin) -->
+        <section id="add-product-section" class="section-card hidden">
+            <h2 class="section-title">Agregar Nueva Camiseta (Solo Admin)</h2>
+            <form id="add-product-form" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <label for="product-image" class="input-label">URL de la Imagen</label>
+                    <input type="url" id="product-image" class="form-input" placeholder="https://ejemplo.com/imagen.jpg" required>
+                </div>
+                <div>
+                    <label for="product-title" class="input-label">Título</label>
+                    <input type="text" id="product-title" class="form-input" placeholder="Camiseta de ejemplo" required>
+                </div>
+                <div>
+                    <label for="product-price" class="input-label">Precio ($)</label>
+                    <input type="number" id="product-price" class="form-input" placeholder="29.99" min="0" step="0.01" required>
+                </div>
+                <div>
+                    <label class="input-label">Tallas Disponibles</label>
+                    <div class="flex flex-wrap gap-2">
+                        <label class="size-label"><input type="checkbox" class="size-checkbox hidden" value="XS"><span class="size-span">XS</span></label>
+                        <label class="size-label"><input type="checkbox" class="size-checkbox hidden" value="S"><span class="size-span">S</span></label>
+                        <label class="size-label"><input type="checkbox" class="size-checkbox hidden" value="M"><span class="size-span">M</span></label>
+                        <label class="size-label"><input type="checkbox" class="size-checkbox hidden" value="L"><span class="size-span">L</span></label>
+                        <label class="size-label"><input type="checkbox" class="size-checkbox hidden" value="XL"><span class="size-span">XL</span></label>
+                    </div>
+                </div>
+                <div class="md:col-span-2">
+                    <button type="submit" class="btn-success w-full">
+                        <i class="fas fa-plus mr-2"></i>Agregar al Catálogo
+                    </button>
+                </div>
+            </form>
+        </section>
+
+        <!-- Catálogo de Productos -->
+        <section>
+            <h2 class="section-title text-center">Catálogo de Camisetas</h2>
+            <div id="product-catalog" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+                <p id="loading-message" class="text-center md:col-span-4 text-gray-600 dark:text-gray-400">Cargando catálogo...</p>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container mx-auto px-4 text-center text-gray-600 dark:text-gray-400">
+            <p>&copy; 2025 Camisetas Store. Todos los derechos reservados.</p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>

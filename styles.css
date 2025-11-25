@@ -1,0 +1,451 @@
+/* Estilos personalizados para la tienda de camisetas */
+
+/* Estilos para el selector de tallas */
+.size-label { 
+    cursor: pointer; 
+}
+
+.size-span {
+    display: inline-block; 
+    padding: 10px 12px; 
+    background-color: #f3f4f6; 
+    color: #1f2937; 
+    border-radius: 999999px; 
+    border: 1px solid #d1d5db; 
+    transition: all 0.2s;
+}
+
+.dark .size-span {
+    background-color: #374151; 
+    color: #d1d5db; 
+    border-color: #4b5563;
+}
+
+.size-checkbox:checked + .size-span {
+    background-color: #2563eb; 
+    color: white; 
+    border-color: #2563eb; 
+    box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.5);
+}
+
+/* Estilos para modales */
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.75);
+    z-index: 50;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+}
+
+.modal-content {
+    background-color: white;
+    border-radius: 0.75rem;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    width: 100%;
+    max-width: 28rem;
+    padding: 2rem;
+    position: relative;
+}
+
+.dark .modal-content {
+    background-color: #1f2937;
+}
+
+.modal-title {
+    font-size: 1.875rem;
+    font-weight: 700;
+    color: #1f2937;
+    margin-bottom: 1.5rem;
+    text-align: center;
+}
+
+.dark .modal-title {
+    color: white;
+}
+
+/* Estilos para botones */
+.btn-primary {
+    background-color: #2563eb;
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    font-weight: 500;
+    transition: background-color 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-primary:hover {
+    background-color: #1d4ed8;
+}
+
+.btn-secondary {
+    color: #6b7280;
+    padding: 0.75rem 1rem;
+    border-radius: 0.5rem;
+    font-weight: 500;
+    transition: color 0.2s;
+    margin-top: 0.5rem;
+}
+
+.dark .btn-secondary {
+    color: #9ca3af;
+}
+
+.btn-secondary:hover {
+    color: #374151;
+}
+
+.dark .btn-secondary:hover {
+    color: #d1d5db;
+}
+
+.btn-login {
+    background-color: #10b981;
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    font-weight: 500;
+    transition: background-color 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-login:hover {
+    background-color: #059669;
+}
+
+.btn-logout {
+    background-color: #ef4444;
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    font-weight: 500;
+    transition: background-color 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-logout:hover {
+    background-color: #dc2626;
+}
+
+.btn-success {
+    background-color: #10b981;
+    color: white;
+    padding: 0.75rem 1rem;
+    border-radius: 0.5rem;
+    font-weight: 500;
+    transition: background-color 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-success:hover {
+    background-color: #059669;
+}
+
+/* Estilos para formularios */
+.form-input {
+    width: 100%;
+    padding: 0.5rem 1rem;
+    border: 1px solid #d1d5db;
+    border-radius: 0.5rem;
+    background-color: white;
+    color: #1f2937;
+    transition: all 0.2s;
+}
+
+.dark .form-input {
+    background-color: #374151;
+    border-color: #4b5563;
+    color: white;
+}
+
+.form-input:focus {
+    outline: none;
+    border-color: #3b82f6;
+}
+
+.input-label {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #374151;
+    margin-bottom: 0.5rem;
+}
+
+.dark .input-label {
+    color: #d1d5db;
+}
+
+/* Estilos para el botón de mostrar/ocultar contraseña */
+.password-toggle {
+    position: absolute;
+    right: 0.75rem;
+    top: 2.25rem;
+    background: none;
+    border: none;
+    color: #6b7280;
+    cursor: pointer;
+    padding: 0.25rem;
+}
+
+.dark .password-toggle {
+    color: #9ca3af;
+}
+
+.password-toggle:hover {
+    color: #374151;
+}
+
+.dark .password-toggle:hover {
+    color: #d1d5db;
+}
+
+/* Estilos para el header */
+.header {
+    background-color: white;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.dark .header {
+    background-color: #1f2937;
+}
+
+/* Estilos para secciones */
+.section-card {
+    margin-bottom: 3rem;
+    background-color: white;
+    border-radius: 0.75rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    padding: 1.5rem;
+}
+
+.dark .section-card {
+    background-color: #1f2937;
+}
+
+.section-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #1f2937;
+    margin-bottom: 1.5rem;
+}
+
+.dark .section-title {
+    color: white;
+}
+
+/* Estilos para tarjetas de productos */
+.product-card {
+    background-color: white;
+    border-radius: 0.75rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    transition: transform 0.3s;
+    display: flex;
+    flex-direction: column;
+}
+
+.dark .product-card {
+    background-color: #1f2937;
+}
+
+.product-card:hover {
+    transform: scale(1.05);
+}
+
+.product-image-container {
+    height: 16rem;
+    overflow: hidden;
+    position: relative;
+}
+
+.product-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.product-info {
+    padding: 1rem;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.product-title {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: #1f2937;
+    margin-bottom: 0.5rem;
+}
+
+.dark .product-title {
+    color: white;
+}
+
+.product-price {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #10b981;
+    margin-bottom: 0.5rem;
+}
+
+.sizes-container {
+    margin-bottom: 1rem;
+}
+
+.sizes-label {
+    font-size: 0.875rem;
+    color: #6b7280;
+    margin-bottom: 0.5rem;
+}
+
+.dark .sizes-label {
+    color: #9ca3af;
+}
+
+.size-tag {
+    padding: 0.25rem 0.5rem;
+    background-color: #f3f4f6;
+    color: #374151;
+    font-size: 0.75rem;
+    border-radius: 0.25rem;
+}
+
+.dark .size-tag {
+    background-color: #374151;
+    color: #d1d5db;
+}
+
+/* Estilos para el botón de eliminar */
+.delete-btn {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    background-color: #ef4444;
+    color: white;
+    padding: 0.5rem;
+    border-radius: 9999px;
+    width: 2rem;
+    height: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.2s;
+    z-index: 20;
+}
+
+.delete-btn:hover {
+    background-color: #dc2626;
+}
+
+/* Estilos para el botón de tema */
+.theme-toggle {
+    padding: 0.5rem;
+    border-radius: 9999px;
+    background-color: #e5e7eb;
+    color: #374151;
+}
+
+.dark .theme-toggle {
+    background-color: #374151;
+    color: #d1d5db;
+}
+
+/* Estilos para el footer */
+.footer {
+    background-color: white;
+    border-top: 1px solid #e5e7eb;
+    margin-top: 3rem;
+    padding: 2rem 0;
+}
+
+.dark .footer {
+    background-color: #1f2937;
+    border-color: #374151;
+}
+
+/* Estilos para detalles del producto */
+.product-detail {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+}
+
+@media (min-width: 768px) {
+    .product-detail {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+.product-detail-image {
+    width: 100%;
+    height: auto;
+    border-radius: 0.5rem;
+}
+
+.product-detail-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.product-detail-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #1f2937;
+    margin-bottom: 0.5rem;
+}
+
+.dark .product-detail-title {
+    color: white;
+}
+
+.product-detail-price {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #10b981;
+    margin-bottom: 1rem;
+}
+
+.detail-actions {
+    display: flex;
+    gap: 0.75rem;
+    margin-top: auto;
+}
+
+.btn-detail {
+    flex: 1;
+    padding: 0.75rem 1rem;
+    border-radius: 0.5rem;
+    font-weight: 500;
+    transition: background-color 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-view-details {
+    background-color: #6b7280;
+    color: white;
+}
+
+.btn-view-details:hover {
+    background-color: #4b5563;
+    color: white;
+
+}
