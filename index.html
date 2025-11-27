@@ -1,136 +1,438 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" class="scroll-smooth">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tienda de Camisetas</title>
-    <link rel="icon" href="./assets/barca.png" type="image/png">
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="styles.css">
-    <script>
-        tailwind.config = { darkMode: 'class', }
-    </script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sportek T-Shirts · Premium Store</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            serif: ['"Playfair Display"', 'serif'],
+            sans: ['Inter', 'sans-serif'],
+          },
+          animation: {
+            fadeIn: 'fadeIn 1s ease-out forwards',
+          },
+          keyframes: {
+            fadeIn: {
+              '0%': { opacity: '0', transform: 'translateY(20px)' },
+              '100%': { opacity: '1', transform: 'translateY(0)' },
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    .glass { backdrop-filter: blur(16px); background: rgba(255, 255, 255, 0.15); border: 1px solid rgba(255, 255, 255, 0.2); }
+
+    /* Estilo para tallas seleccionadas */
+    .size-checkbox:checked + .size-span {
+      @apply bg-gradient-to-r from-purple-600 to-indigo-700 text-white shadow-lg ring-4 ring-purple-500/30;
+    }
+    .size-span {
+      @apply px-5 py-3 rounded-full bg-white/10 backdrop-blur border border-white/20 cursor-pointer transition-all hover:bg-white/20;
+    }
+
+    /* Estilos para mostrar/ocultar contraseña */
+    .password-toggle {
+      position: absolute;
+      right: 1.5rem;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      color: #6b7280;
+      cursor: pointer;
+      padding: 0.25rem;
+    }
+    .dark .password-toggle {
+      color: #9ca3af;
+    }
+    .password-toggle:hover {
+      color: #374151;
+    }
+    .dark .password-toggle:hover {
+      color: #d1d5db;
+    }
+  </style>
 </head>
-<body class="bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
-    <!-- Modal de Login -->
-    <div id="login-modal" class="modal-overlay hidden">
-        <div class="modal-content">
-            <h3 class="modal-title">🔐 Iniciar Sesión (Admin)</h3>
-            <form id="login-form" class="space-y-6">
-                <div>
-                    <label for="username" class="input-label">Usuario</label>
-                    <input type="text" id="username" class="form-input" required>
-                </div>
-                <div class="relative">
-                    <label for="password" class="input-label">Contraseña</label>
-                    <input type="password" id="password" class="form-input pr-10" required>
-                    <button type="button" id="toggle-password" class="password-toggle">
-                        <i class="fas fa-eye"></i>
-                    </button>
-                </div>
-                <button type="submit" class="btn-primary w-full">
-                    Acceder
-                </button>
-                <button type="button" id="close-login-modal" class="btn-secondary w-full">
-                    Cancelar
-                </button>
-                <p class="text-sm text-center text-gray-500 dark:text-gray-400 mt-4">Credenciales: <br> Axel15 <br> Axel15*.</p>
-            </form>
-        </div>
-    </div>
 
-    <!-- Modal de Detalles del Producto -->
-    <div id="product-detail-modal" class="modal-overlay hidden">
-        <div class="modal-content max-w-2xl">
-            <button id="close-detail-modal" class="absolute top-4 right-4 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
-                <i class="fas fa-times text-xl"></i>
+<body class="bg-gray-50 dark:bg-black text-gray-900 dark:text-gray-100 min-h-screen">
+
+<!-- Navbar con logo alineado sin marco redondo -->
+<header class="fixed top-0 left-0 right-0 z-50 glass border-b border-white/10">
+  <div class="max-w-7xl mx-auto px-6 py-5 flex justify-between items-center">
+    <div class="flex items-center space-x-2">
+      <!-- Logo sin marco redondo -->
+      <img src="./assets/barca.png" alt="FC Barcelona" class="h-10 w-auto object-contain">
+      <h1 class="text-3xl font-serif tracking-wider">Sportek T-Shirts</h1>
+    </div>
+    <div class="flex items-center gap-6">
+      <button id="loginBtn" class="px-8 py-3 rounded-full font-medium transition-all duration-300 shadow-lg hover:shadow-xl
+        bg-gradient-to-r from-purple-600 to-indigo-700 hover:from-purple-700 hover:to-indigo-800 text-white">
+        <span id="loginText">Iniciar Sesión</span>
+      </button>
+      <button id="themeBtn" class="p-3 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur transition-all">
+        <i class="fas fa-moon text-xl"></i>
+      </button>
+    </div>
+  </div>
+</header>
+
+<!-- Modal de Login -->
+<div id="loginModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-6">
+  <div class="glass rounded-3xl shadow-2xl max-w-md w-full p-10 animate-fadeIn">
+    <h3 class="text-3xl font-serif mb-8 text-center">Acceso Creador</h3>
+    <form id="loginForm" class="space-y-6">
+      <div>
+        <label for="username" class="block text-sm font-medium mb-2">Usuario</label>
+        <input type="text" id="username" class="w-full px-6 py-4 rounded-2xl bg-white/10 border border-white/20 focus:border-purple-500 focus:ring-4 focus:ring-purple-500/30 transition-all placeholder-gray-400" placeholder="Tu usuario" required>
+      </div>
+      <div class="relative">
+        <label for="password" class="block text-sm font-medium mb-2">Contraseña</label>
+        <input type="password" id="password" class="w-full px-6 py-4 pr-12 rounded-2xl bg-white/10 border border-white/20 focus:border-purple-500 focus:ring-4 focus:ring-purple-500/30 transition-all placeholder-gray-400" placeholder="Tu contraseña" required>
+        <button type="button" id="togglePassword" class="password-toggle">
+          <i class="fas fa-eye"></i>
+        </button>
+      </div>
+      <button type="submit" class="w-full bg-gradient-to-r from-purple-600 to-indigo-700 hover:from-purple-700 hover:to-indigo-800 text-white font-bold py-4 rounded-2xl shadow-2xl transition-all">
+        Acceder
+      </button>
+      <button type="button" id="closeLogin" class="w-full bg-white/10 hover:bg-white/20 text-white font-bold py-4 rounded-2xl transition-all">
+        Cancelar
+      </button>
+      <p class="text-sm text-center text-gray-500 dark:text-gray-400 mt-4">Credenciales: <br> Axel15 <br> Axel15*.</p>
+    </form>
+  </div>
+</div>
+
+<main class="pt-32 pb-20 px-6 max-w-7xl mx-auto">
+
+  <!-- Hero -->
+  <div class="text-center mb-20 animate-fadeIn">
+    <h2 class="text-6xl md:text-7xl font-serif mb-6 bg-gradient-to-r from-purple-600 via-indigo-600 to-pink-600 bg-clip-text text-transparent leading-tight">
+      Colección Exclusiva
+    </h2>
+    <p class="text-xl text-gray-600 dark:text-gray-400 max-w-2xl mx-auto leading-relaxed">
+      Cada camiseta es una obra de arte. Diseñada para quienes no siguen tendencias — las crean.
+    </p>
+  </div>
+
+  <!-- Panel Admin -->
+  <section id="adminPanel" class="mb-20 hidden">
+    <div class="glass rounded-3xl p-10 shadow-2xl border border-white/20">
+      <h3 class="text-3xl font-serif mb-8 flex items-center gap-4">
+        Panel del Creador
+      </h3>
+      <form id="addForm" class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+        <input type="url" id="addImage" placeholder="URL de la imagen" required class="col-span-1 lg:col-span-2 px-6 py-4 rounded-2xl bg-white/10 border border-white/20 focus:border-purple-500 focus:ring-4 focus:ring-purple-500/30 transition-all placeholder-gray-400">
+        <input type="text" id="addTitle" placeholder="Título de la camiseta" required class="px-6 py-4 rounded-2xl bg-white/10 border border-white/20 focus:border-purple-500 focus:ring-4 focus:ring-purple-500/30 transition-all placeholder-gray-400">
+        <input type="number" id="addPrice" placeholder="Precio ($)" min="0" step="0.01" value="39.99" required class="px-6 py-4 rounded-2xl bg-white/10 border border-white/20 focus:border-purple-500 focus:ring-4 focus:ring-purple-500/30 transition-all placeholder-gray-400">
+        
+        <!-- Tallas como botones seleccionables -->
+        <div class="flex flex-wrap gap-3 items-center">
+          <span class="text-sm opacity-80 mr-2">Tallas:</span>
+          <label><input type="checkbox" name="sizes" value="XS" class="size-checkbox hidden"><span class="size-span">XS</span></label>
+          <label><input type="checkbox" name="sizes" value="S" class="size-checkbox hidden"><span class="size-span">S</span></label>
+          <label><input type="checkbox" name="sizes" value="M" class="size-checkbox hidden" checked><span class="size-span">M</span></label>
+          <label><input type="checkbox" name="sizes" value="L" class="size-checkbox hidden" checked><span class="size-span">L</span></label>
+          <label><input type="checkbox" name="sizes" value="XL" class="size-checkbox hidden"><span class="size-span">XL</span></label>
+        </div>
+
+        <button type="submit" class="lg:col-span-4 bg-gradient-to-r from-purple-600 to-indigo-700 hover:from-purple-700 hover:to-indigo-800 text-white font-bold py-5 rounded-2xl shadow-2xl transform hover:scale-105 transition-all">
+          Crear Nueva Camiseta
+        </button>
+      </form>
+    </div>
+  </section>
+
+  <!-- Catálogo -->
+  <div id="catalog" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+    <div class="col-span-full text-center py-20">
+      <div class="inline-block animate-pulse">
+        <div class="w-16 h-16 border-4 border-purple-600 border-t-transparent rounded-full animate-spin mx-auto mb-6"></div>
+        <p class="text-2xl font-light text-gray-500">Cargando la colección...</p>
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- Modal Editar -->
+<div id="editModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-6">
+  <div class="glass rounded-3xl shadow-2xl max-w-2xl w-full p-10 animate-fadeIn">
+    <h3 class="text-3xl font-serif mb-8">Editar Camiseta</h3>
+    <form id="editForm">
+      <input type="hidden" id="editId">
+      <input type="url" id="editImage" class="w-full px-6 py-4 rounded-2xl bg-white/10 border border-white/20 focus:border-purple-500 focus:ring-4 focus:ring-purple-500/30 mb-6 placeholder-gray-400" placeholder="URL de la imagen" required>
+      <input type="text" id="editTitle" class="w-full px-6 py-4 rounded-2xl bg-white/10 border border-white/20 focus:border-purple-500 focus:ring-4 focus:ring-purple-500/30 mb-6 placeholder-gray-400" placeholder="Título" required>
+      <input type="number" id="editPrice" class="w-full px-6 py-4 rounded-2xl bg-white/10 border border-white/20 focus:border-purple-500 focus:ring-4 focus:ring-purple-500/30 mb-8 placeholder-gray-400" placeholder="Precio ($)" min="0" step="0.01" required>
+      <div class="mb-10">
+        <p class="mb-4 text-sm opacity-80">Tallas disponibles</p>
+        <div class="flex flex-wrap gap-4">
+          <label><input type="checkbox" name="edit_sizes" value="XS" class="size-checkbox hidden"><span class="size-span">XS</span></label>
+          <label><input type="checkbox" name="edit_sizes" value="S" class="size-checkbox hidden"><span class="size-span">S</span></label>
+          <label><input type="checkbox" name="edit_sizes" value="M" class="size-checkbox hidden"><span class="size-span">M</span></label>
+          <label><input type="checkbox" name="edit_sizes" value="L" class="size-checkbox hidden"><span class="size-span">L</span></label>
+          <label><input type="checkbox" name="edit_sizes" value="XL" class="size-checkbox hidden"><span class="size-span">XL</span></label>
+        </div>
+      </div>
+      <div class="flex gap-6">
+        <button type="submit" class="flex-1 bg-gradient-to-r from-purple-600 to-indigo-700 hover:from-purple-700 hover:to-indigo-800 text-white font-bold py-5 rounded-2xl shadow-2xl transition-all">Guardar Cambios</button>
+        <button type="button" id="closeEdit" class="flex-1 bg-white/10 hover:bg-white/20 text-white font-bold py-5 rounded-2xl transition-all">Cancelar</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+  const supabase = window.supabase.createClient('https://rusiimqtzjfojxpojsvg.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJ1c2lpbXF0empmb2p4cG9qc3ZnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQwMDc0MDMsImV4cCI6MjA3OTU4MzQwM30.953QFT1e-tDBvCIMtpwLqxLlwrDyQKjTilDHy5etThE');
+
+  // Número de WhatsApp (REEMPLAZA con tu número real)
+  const WHATSAPP_NUMBER = "+584121747957"; // Ejemplo: +1234567890
+
+  let isAdmin = false;
+  const catalog = document.getElementById('catalog');
+  const adminPanel = document.getElementById('adminPanel');
+  const loginBtn = document.getElementById('loginBtn');
+  const loginText = document.getElementById('loginText');
+  const loginModal = document.getElementById('loginModal');
+  const loginForm = document.getElementById('loginForm');
+  const closeLogin = document.getElementById('closeLogin');
+  const togglePassword = document.getElementById('togglePassword');
+  const passwordInput = document.getElementById('password');
+
+  // Función para generar mensaje de WhatsApp
+  function generateWhatsAppMessage(product) {
+    const sizes = product.sizes && product.sizes.length > 0 
+      ? product.sizes.join(', ') 
+      : 'No especificadas';
+    
+    return `¡Hola! Estoy interesado en comprar la siguiente camiseta de Sportek T-Shirts:
+
+📌 *Producto:* ${product.title}
+💰 *Precio:* $${parseFloat(product.price || 39.99).toFixed(2)}
+📏 *Tallas disponibles:* ${sizes}
+
+Por favor, necesito información sobre disponibilidad, formas de pago y envío. ¡Gracias!`;
+  }
+
+  // Función para abrir WhatsApp con mensaje predefinido
+  function openWhatsApp(product) {
+    const message = encodeURIComponent(generateWhatsAppMessage(product));
+    const url = `https://wa.me/${WHATSAPP_NUMBER}?text=${message}`;
+    window.open(url, '_blank');
+  }
+
+  async function loadProducts() {
+    const { data } = await supabase.from('productos').select('*').order('id', { ascending: false });
+    
+    if (!data || data.length === 0) {
+      catalog.innerHTML = `<div class="col-span-full text-center py-32"><p class="text-3xl font-light text-gray-500">La colección está vacía.<br><span class="text-lg">${isAdmin ? 'Agrega tu primera camiseta' : 'Pronto llegarán nuevas piezas'}</span></p></div>`;
+      return;
+    }
+
+    catalog.innerHTML = data.map((p, i) => `
+      <div class="group relative bg-white/5 dark:bg-white/5 rounded-3xl overflow-hidden shadow-2xl hover:shadow-3xl transition-all duration-500 animate-fadeIn" style="animation-delay: ${i * 100}ms">
+        <div class="relative overflow-hidden">
+          <img src="${p.image}" alt="${p.title}" class="w-full h-96 object-cover transition-transform duration-1000 group-hover:scale-110">
+          <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
+          
+          <!-- Etiqueta de precio -->
+          <div class="absolute top-4 left-4 bg-gradient-to-r from-green-500 to-emerald-600 text-white px-4 py-2 rounded-full font-bold shadow-lg">
+            $${parseFloat(p.price || 39.99).toFixed(2)}
+          </div>
+        </div>
+
+        ${isAdmin ? `
+          <div class="absolute top-4 right-4 flex flex-col gap-3 opacity-0 group-hover:opacity-100 transition-opacity z-10">
+            <button class="editBtn p-3 rounded-full bg-white/20 backdrop-blur hover:bg-white/40 shadow-xl border border-white/30 transition-all" data-id="${p.id}">
+              <i class="fas fa-edit text-white text-sm"></i>
             </button>
-            <div id="product-detail-content" class="p-6">
-                <!-- Contenido dinámico se cargará aquí -->
-            </div>
+            <button class="deleteBtn p-3 rounded-full bg-red-600/80 backdrop-blur hover:bg-red-700 shadow-xl border border-white/30 transition-all" data-id="${p.id}">
+              <i class="fas fa-trash text-white text-sm"></i>
+            </button>
+          </div>
+        ` : ''}
+
+        <div class="p-6 text-center space-y-5">
+          <h3 class="text-xl font-serif leading-tight">${p.title}</h3>
+          
+          <div class="flex justify-center flex-wrap gap-2">
+            ${p.sizes && p.sizes.length > 0 
+              ? p.sizes.map(s => `<span class="px-4 py-2 rounded-full bg-white/10 backdrop-blur border border-white/20 text-xs font-medium">${s}</span>`).join('')
+              : '<span class="text-gray-500 text-xs">Sin tallas</span>'
+            }
+          </div>
+
+          <div class="flex gap-3">
+            <button class="whatsapp-btn flex-1 py-4 rounded-2xl bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-medium shadow-xl hover:shadow-green-500/50 transition-all flex items-center justify-center gap-2" data-id="${p.id}">
+              <i class="fab fa-whatsapp"></i>
+              Comprar
+            </button>
+            <button class="flex-1 py-4 rounded-2xl bg-gradient-to-r from-purple-600 to-indigo-700 hover:from-purple-700 hover:to-indigo-800 text-white font-medium shadow-xl hover:shadow-purple-500/50 transition-all">
+              <i class="fas fa-shopping-cart mr-2"></i>Carrito
+            </button>
+          </div>
         </div>
-    </div>
+      </div>
+    `).join('');
 
-    <!-- Header -->
-    <header class="header">
-        <div class="container mx-auto px-4 py-4 flex flex-wrap justify-between items-center">
-            <div class="flex items-center space-x-3">
-                <img src="./assets/barca.png" alt="Tu Logo" class="h-8 w-8 object-contain">
-                <h1 class="text-2xl font-bold text-gray-800 dark:text-white">Camisetas Store</h1>
-            </div>
-            
-            <div class="flex items-center space-x-2 md:space-x-4"> 
-                <button id="login-toggle" class="btn-login">
-                    <i class="fas fa-sign-in-alt md:mr-2" id="login-icon"></i>
-                    <span id="login-text" class="hidden md:inline">Iniciar Sesión</span> 
-                </button>
-                
-                <button class="btn-primary">
-                    <i class="fas fa-shopping-cart md:mr-2"></i>
-                    <span class="hidden md:inline">Carrito</span>
-                </button>
-                
-                <button id="theme-toggle" class="theme-toggle">
-                    <i class="fas fa-moon" id="theme-icon"></i>
-                </button>
-            </div>
-        </div>
-    </header>
+    // Asignar eventos a los botones de WhatsApp
+    document.querySelectorAll('.whatsapp-btn').forEach(btn => {
+      btn.addEventListener('click', function() {
+        const productId = this.getAttribute('data-id');
+        const product = data.find(p => p.id == productId);
+        if (product) {
+          openWhatsApp(product);
+        }
+      });
+    });
 
-    <!-- Contenido Principal -->
-    <main class="container mx-auto px-4 py-8">
-        <!-- Sección de Agregar Producto (solo para admin) -->
-        <section id="add-product-section" class="section-card hidden">
-            <h2 class="section-title">Agregar Nueva Camiseta (Solo Admin)</h2>
-            <form id="add-product-form" class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                    <label for="product-image" class="input-label">URL de la Imagen</label>
-                    <input type="url" id="product-image" class="form-input" placeholder="https://ejemplo.com/imagen.jpg" required>
-                </div>
-                <div>
-                    <label for="product-title" class="input-label">Título</label>
-                    <input type="text" id="product-title" class="form-input" placeholder="Camiseta de ejemplo" required>
-                </div>
-                <div>
-                    <label for="product-price" class="input-label">Precio ($)</label>
-                    <input type="number" id="product-price" class="form-input" placeholder="29.99" min="0" step="0.01" required>
-                </div>
-                <div>
-                    <label class="input-label">Tallas Disponibles</label>
-                    <div class="flex flex-wrap gap-2">
-                        <label class="size-label"><input type="checkbox" class="size-checkbox hidden" value="XS"><span class="size-span">XS</span></label>
-                        <label class="size-label"><input type="checkbox" class="size-checkbox hidden" value="S"><span class="size-span">S</span></label>
-                        <label class="size-label"><input type="checkbox" class="size-checkbox hidden" value="M"><span class="size-span">M</span></label>
-                        <label class="size-label"><input type="checkbox" class="size-checkbox hidden" value="L"><span class="size-span">L</span></label>
-                        <label class="size-label"><input type="checkbox" class="size-checkbox hidden" value="XL"><span class="size-span">XL</span></label>
-                    </div>
-                </div>
-                <div class="md:col-span-2">
-                    <button type="submit" class="btn-success w-full">
-                        <i class="fas fa-plus mr-2"></i>Agregar al Catálogo
-                    </button>
-                </div>
-            </form>
-        </section>
+    if (isAdmin) {
+      document.querySelectorAll('.deleteBtn').forEach(b => {
+        b.onclick = () => {
+          if (confirm('¿Eliminar esta camiseta?')) {
+            supabase.from('productos').delete().eq('id', b.dataset.id).then(() => loadProducts());
+          }
+        };
+      });
+      document.querySelectorAll('.editBtn').forEach(b => {
+        b.onclick = () => openEditModal(b.dataset.id, data);
+      });
+    }
+  }
 
-        <!-- Catálogo de Productos -->
-        <section>
-            <h2 class="section-title text-center">Catálogo de Camisetas</h2>
-            <div id="product-catalog" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-                <p id="loading-message" class="text-center md:col-span-4 text-gray-600 dark:text-gray-400">Cargando catálogo...</p>
-            </div>
-        </section>
-    </main>
+  function openEditModal(id, products) {
+    const p = products.find(x => x.id == id);
+    document.getElementById('editId').value = p.id;
+    document.getElementById('editImage').value = p.image;
+    document.getElementById('editTitle').value = p.title;
+    document.getElementById('editPrice').value = p.price || 39.99;
+    document.querySelectorAll('input[name="edit_sizes"]').forEach(cb => {
+      cb.checked = p.sizes.includes(cb.value);
+    });
+    document.getElementById('editModal').classList.remove('hidden');
+  }
 
-    <!-- Footer -->
-    <footer class="footer">
-        <div class="container mx-auto px-4 text-center text-gray-600 dark:text-gray-400">
-            <p>&copy; 2025 Camisetas Store. Todos los derechos reservados.</p>
-        </div>
-    </footer>
+  document.getElementById('editForm').onsubmit = async e => {
+    e.preventDefault();
+    const sizes = Array.from(document.querySelectorAll('input[name="edit_sizes"]:checked')).map(c => c.value);
+    if (!sizes.length) return alert('Selecciona al menos una talla');
+    await supabase.from('productos').update({
+      image: e.target.editImage.value,
+      title: e.target.editTitle.value,
+      price: parseFloat(e.target.editPrice.value),
+      sizes
+    }).eq('id', e.target.editId.value);
+    document.getElementById('editModal').classList.add('hidden');
+    loadProducts();
+  };
 
-    <script src="script.js"></script>
+  document.getElementById('closeEdit').onclick = () => document.getElementById('editModal').classList.add('hidden');
+
+  // Login Admin
+  loginBtn.onclick = () => {
+    if (isAdmin) {
+      isAdmin = false;
+      loginText.textContent = 'Iniciar Sesión';
+      loginBtn.classList.remove('from-red-600', 'to-rose-700');
+      loginBtn.classList.add('from-purple-600', 'to-indigo-700');
+      adminPanel.classList.add('hidden');
+      loadProducts();
+    } else {
+      loginModal.classList.remove('hidden');
+    }
+  };
+
+  // Manejo del formulario de login
+  loginForm.onsubmit = e => {
+    e.preventDefault();
+    const username = document.getElementById('username').value;
+    const password = document.getElementById('password').value;
+    
+    if (username === 'Axel15' && password === 'Axel15*.') {
+      isAdmin = true;
+      loginText.textContent = 'Cerrar Sesión';
+      loginBtn.classList.remove('from-purple-600', 'to-indigo-700');
+      loginBtn.classList.add('from-red-600', 'to-rose-700');
+      adminPanel.classList.remove('hidden');
+      loginModal.classList.add('hidden');
+      loginForm.reset();
+      loadProducts();
+      alert('Bienvenido, creador');
+    } else {
+      alert('Credenciales incorrectas');
+    }
+  };
+
+  closeLogin.onclick = () => {
+    loginModal.classList.add('hidden');
+    loginForm.reset();
+  };
+
+  // Mostrar/ocultar contraseña
+  togglePassword.addEventListener('click', function() {
+    const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+    passwordInput.setAttribute('type', type);
+    
+    // Cambiar el icono
+    const icon = this.querySelector('i');
+    if (type === 'password') {
+      icon.classList.remove('fa-eye-slash');
+      icon.classList.add('fa-eye');
+    } else {
+      icon.classList.remove('fa-eye');
+      icon.classList.add('fa-eye-slash');
+    }
+  });
+
+  // Agregar camiseta
+  document.getElementById('addForm').onsubmit = async e => {
+    e.preventDefault();
+    const sizes = Array.from(e.target.querySelectorAll('input[name="sizes"]:checked')).map(c => c.value);
+    if (!sizes.length) return alert('Selecciona al menos una talla');
+    
+    await supabase.from('productos').insert([{
+      image: e.target.addImage.value.trim(),
+      title: e.target.addTitle.value.trim(),
+      price: parseFloat(e.target.addPrice.value),
+      sizes
+    }]);
+    
+    e.target.reset();
+    document.getElementById('addPrice').value = "39.99"; // Restablecer precio por defecto
+    loadProducts();
+  };
+
+  // Tema
+  document.getElementById('themeBtn').onclick = () => {
+    document.documentElement.classList.toggle('dark');
+    const isDark = document.documentElement.classList.contains('dark');
+    document.querySelector('#themeBtn i').className = isDark ? 'fas fa-sun text-yellow-400' : 'fas fa-moon';
+  };
+
+  // Cerrar modales al hacer clic fuera
+  document.addEventListener('click', (e) => {
+    if (e.target === loginModal) {
+      loginModal.classList.add('hidden');
+      loginForm.reset();
+    }
+    if (e.target === document.getElementById('editModal')) {
+      document.getElementById('editModal').classList.add('hidden');
+    }
+  });
+
+  // Carga inicial
+  supabase.channel('productos').on('postgres_changes', { event: '*', schema: 'public', table: 'productos' }, () => loadProducts()).subscribe();
+  loadProducts();
+</script>
 </body>
 </html>
